@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Viral Video Prompt Generator</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #080808; color: #f0f0f0; font-family: 'Courier New', monospace; min-height: 100vh; }
+::-webkit-scrollbar { width: 6px; } 
+::-webkit-scrollbar-track { background: #111; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+const { useState } = React;
+
+const niches = [
+  { id: "motivation", label: "🔥 Motivation", color: "#FF4D00" },
+  { id: "horror", label: "👻 Horror Story", color: "#7B2FBE" },
+  { id: "finance", label: "💰 Finance / Money", color: "#00C896" },
+  { id: "mindset", label: "🧠 Mindset / Psychology", color: "#0094FF" },
+  { id: "facts", label: "⚡ Shocking Facts", color: "#FFB300" },
+  { id: "relationship", label: "❤️ Relationship", color: "#FF3366" },
+  { id: "history", label: "🏛️ Dark History", color: "#8B6914" },
+  { id: "health", label: "💪 Health / Fitness", color: "#00D084" },
+  { id: "ai", label: "🤖 AI & Future", color: "#00D4FF" },
+  { id: "crime", label: "🕵️ True Crime", color: "#C0392B" },
+];
+
+const styles = [
+  "Cinematic Documentary","Fast-Cut Reels","Talking Head + B-Roll",
+  "Text-on-Screen (No Face)","Voiceover + AI Visuals","Animated Explainer","Reddit-Style Storytelling",
+];
+
+const durations = ["30 seconds","60 seconds","3 minutes","5–8 minutes","10+ minutes"];
+
+const hooks = {
+  motivation: ["Nobody talks about the dark truth of success…","The one habit that separates the top 1% from everyone else:","You're not lazy — your brain is literally wired against you."],
+  horror: ["They found the footage three days after she disappeared…","This story was buried by the media. Here's why.","What they discovered inside that house was never explained."],
+  finance: ["The rich don't work for money — here's what they actually do:","If you have a job and savings, the banks are using you.","This financial trick is legal, but banks hate it."],
+  mindset: ["Your thoughts are not yours — here's the science.","The 3 mental shifts that changed everything for me.","Why smart people stay broke (it's not what you think)."],
+  facts: ["This is so disturbing it was removed from textbooks.","Scientists just confirmed something that changes everything.","99% of people don't know this. Once you see it, you can't unsee it."],
+  relationship: ["If someone does this, they don't love you — they need you.","The real reason most relationships fail in year 3.","Signs someone is emotionally draining you without you noticing."],
+  history: ["The history books lied to you about this.","One decision made 200 years ago still controls your life today.","This empire was erased from history — and here's why."],
+  health: ["Doctors won't tell you this about your morning routine.","This one daily habit ages you 10 years faster.","The supplement industry doesn't want you to know this."],
+  ai: ["AI just crossed a line that scientists said would never happen.","In 3 years, half of these jobs won't exist. Here's the list.","This AI tool is replacing an entire industry right now."],
+  crime: ["The police knew who did it. They did nothing.","He lived a normal life for 20 years. Then they found the basement.","This case was closed — but the evidence tells a different story."],
+};
+
+const buildPrompt = (niche, style, duration, hook, topic) => {
+  const nicheLabel = niches.find(n => n.id === niche)?.label || niche;
+  return `You are a world-class YouTube / short-form video scriptwriter specializing in VIRAL ${nicheLabel} content.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 VIDEO BRIEF
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 Niche: ${nicheLabel}
+🎬 Style: ${style}
+⏱️ Duration: ${duration}
+💡 Topic / Angle: ${topic || "[User's chosen topic]"}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🪝 HOOK (First 3 seconds)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+"${hook}"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📝 SCRIPT STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[HOOK — 0:00–0:05]
+Open with the hook above. Punchy, unfinished, shocking. Do NOT introduce yourself.
+
+[CONTEXT / SETUP — 0:05–0:20]
+Establish WHY this matters. Use a relatable scenario or statistic. Create curiosity gap.
+
+[MAIN BODY — 0:20 to 80% of video]
+Break into 3–5 numbered points or story beats. Each point:
+- Start with a bold claim or story moment
+- Back it up with a specific example, statistic, or real case
+- End with a micro-cliffhanger to the next point
+
+[PLOT TWIST / REVELATION — near the end]
+Most shocking or surprising insight. The moment viewers share the video.
+
+[CALL TO ACTION — final 10 seconds]
+One strong CTA tied to the emotion of the video.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎥 VISUAL DIRECTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+For each section suggest:
+- B-roll footage or AI image prompt
+- On-screen text overlays
+- Sound design notes (music mood, SFX)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 VIRAL OPTIMIZATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Hook triggers curiosity OR fear OR desire in 3 seconds
+✅ Never reveal full answer until 70%+ watched
+✅ Use "you" language — speak directly to viewer
+✅ Short sentences. Punchy. Max 15 words.
+✅ Pattern interrupt every 30–45 seconds
+✅ End on open loop that makes viewers comment
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📣 TITLE + THUMBNAIL IDEAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Generate 5 click-worthy titles and 5 thumbnail concepts for high CTR.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#️⃣ TAGS & DESCRIPTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Write SEO-optimized video description (150 words) and 20 hashtags/tags.
+
+Now write the FULL SCRIPT. Make it emotionally gripping, factually sharp, and built to go VIRAL.`;
+};
+
+function App() {
+  const [selectedNiche, setSelectedNiche] = useState(null);
+  const [selectedStyle, setSelectedStyle] = useState(styles[0]);
+  const [selectedDuration, setSelectedDuration] = useState(durations[1]);
+  const [selectedHook, setSelectedHook] = useState(null);
+  const [topic, setTopic] = useState("");
+  const [generatedPrompt, setGeneratedPrompt] = useState("");
+  const [copied, setCopied] = useState(false);
+  const [step, setStep] = useState(1);
+
+  const nicheColor = niches.find(n => n.id === selectedNiche)?.color || "#FF4D00";
+
+  const generate = () => {
+    if (!selectedNiche || !selectedHook) return;
+    setGeneratedPrompt(buildPrompt(selectedNiche, selectedStyle, selectedDuration, selectedHook, topic));
+    setStep(3);
+  };
+
+  const copy = () => {
+    navigator.clipboard.writeText(generatedPrompt);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const reset = () => { setSelectedNiche(null); setSelectedHook(null); setTopic(""); setGeneratedPrompt(""); setStep(1); };
+
+  const btn = (active, color, onClick, children, extra={}) => (
+    <button onClick={onClick} style={{
+      background: active ? color+'22' : '#111',
+      border: `1px solid ${active ? color : '#222'}`,
+      borderRadius: 6, padding: '10px 14px',
+      color: active ? color : '#888',
+      fontSize: 12, fontFamily: "'Courier New',monospace",
+      cursor: 'pointer', textAlign: 'left',
+      transition: 'all 0.2s', ...extra
+    }}>{children}</button>
+  );
+
+  return (
+    <div style={{ minHeight:'100vh', background:'#080808', padding:'0', position:'relative' }}>
+      <div style={{
+        position:'fixed', inset:0, pointerEvents:'none',
+        background:`radial-gradient(ellipse 60% 40% at 50% 0%, ${nicheColor}15 0%, transparent 70%)`,
+        transition:'background 0.6s'
+      }}/>
+      <div style={{ maxWidth:820, margin:'0 auto', padding:'32px 16px', position:'relative' }}>
+
+        {/* Header */}
+        <div style={{ textAlign:'center', marginBottom:40 }}>
+          <div style={{ display:'inline-block', border:`1px solid ${nicheColor}55`, borderRadius:4, padding:'3px 12px', fontSize:10, letterSpacing:4, color:nicheColor, marginBottom:14, textTransform:'uppercase' }}>
+            Auto Prompt Engine v2.0
+          </div>
+          <h1 style={{ fontSize:'clamp(26px,6vw,48px)', fontWeight:900, fontFamily:'Georgia,serif', margin:0, lineHeight:1.1, letterSpacing:-1 }}>
+            VIRAL VIDEO<br/><span style={{ color:nicheColor, transition:'color 0.4s' }}>PROMPT GENERATOR</span>
+          </h1>
+          <p style={{ color:'#555', marginTop:10, fontSize:13 }}>Build a complete AI prompt for any viral niche in 60 seconds</p>
+        </div>
+
+        {/* Steps indicator */}
+        <div style={{ display:'flex', gap:6, marginBottom:36, alignItems:'center' }}>
+          {['Choose Niche','Configure','Your Prompt'].map((label,i) => (
+            <div key={i} style={{ display:'flex', alignItems:'center', gap:6, flex:1 }}>
+              <div style={{
+                width:26, height:26, borderRadius:'50%',
+                background: step>i+1 ? nicheColor : 'transparent',
+                border:`2px solid ${step>=i+1 ? nicheColor : '#333'}`,
+                display:'flex', alignItems:'center', justifyContent:'center',
+                fontSize:10, fontWeight:700,
+                color: step>i+1 ? '#000' : step===i+1 ? nicheColor : '#444',
+                flexShrink:0, transition:'all 0.3s'
+              }}>{step>i+1 ? '✓' : i+1}</div>
+              <span style={{ fontSize:10, color:step>=i+1?'#ccc':'#444', whiteSpace:'nowrap' }}>{label}</span>
+              {i<2 && <div style={{ flex:1, height:1, background:step>i+1?nicheColor:'#222' }}/>}
+            </div>
+          ))}
+        </div>
+
+        {/* STEP 1 */}
+        {step===1 && (
+          <div>
+            <p style={{ fontSize:11, letterSpacing:3, color:'#555', marginBottom:16, textTransform:'uppercase' }}>01 — Select Your Niche</p>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(160px,1fr))', gap:8 }}>
+              {niches.map(n => btn(selectedNiche===n.id, n.color, ()=>{setSelectedNiche(n.id);setSelectedHook(null);}, n.label))}
+            </div>
+            <button onClick={()=>selectedNiche&&setStep(2)} style={{
+              marginTop:28, background:selectedNiche?nicheColor:'#1a1a1a',
+              color:selectedNiche?'#000':'#333', border:'none', borderRadius:4,
+              padding:'13px 28px', fontSize:12, fontFamily:"'Courier New',monospace",
+              fontWeight:700, letterSpacing:2, cursor:selectedNiche?'pointer':'not-allowed',
+              textTransform:'uppercase', transition:'all 0.3s'
+            }}>Continue →</button>
+          </div>
+        )}
+
+        {/* STEP 2 */}
+        {step===2 && (
+          <div>
+            <p style={{ fontSize:11, letterSpacing:3, color:'#555', marginBottom:12, textTransform:'uppercase' }}>02 — Video Style</p>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:7, marginBottom:28 }}>
+              {styles.map(s => btn(selectedStyle===s, nicheColor, ()=>setSelectedStyle(s), s, { padding:'7px 12px' }))}
+            </div>
+
+            <p style={{ fontSize:11, letterSpacing:3, color:'#555', marginBottom:12, textTransform:'uppercase' }}>03 — Duration</p>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:7, marginBottom:28 }}>
+              {durations.map(d => btn(selectedDuration===d, nicheColor, ()=>setSelectedDuration(d), d, { padding:'7px 12px' }))}
+            </div>
+
+            <p style={{ fontSize:11, letterSpacing:3, color:'#555', marginBottom:12, textTransform:'uppercase' }}>04 — Choose Your Hook</p>
+            <div style={{ display:'flex', flexDirection:'column', gap:7, marginBottom:28 }}>
+              {(hooks[selectedNiche]||[]).map(h => btn(selectedHook===h, nicheColor, ()=>setSelectedHook(h), `"${h}"`, { lineHeight:1.5 }))}
+            </div>
+
+            <p style={{ fontSize:11, letterSpacing:3, color:'#555', marginBottom:10, textTransform:'uppercase' }}>05 — Your Topic <span style={{color:'#333'}}>(optional)</span></p>
+            <input value={topic} onChange={e=>setTopic(e.target.value)}
+              placeholder="e.g. 'How Elon Musk trained his brain'"
+              style={{ width:'100%', background:'#111', border:'1px solid #222', borderRadius:6, padding:'11px 14px', color:'#ddd', fontSize:12, fontFamily:"'Courier New',monospace", outline:'none', marginBottom:24 }}
+            />
+
+            <div style={{ display:'flex', gap:10 }}>
+              <button onClick={()=>setStep(1)} style={{ background:'transparent', border:'1px solid #333', borderRadius:4, padding:'12px 20px', color:'#555', fontSize:11, fontFamily:"'Courier New',monospace", cursor:'pointer' }}>← Back</button>
+              <button onClick={generate} disabled={!selectedHook} style={{
+                flex:1, background:selectedHook?nicheColor:'#1a1a1a',
+                color:selectedHook?'#000':'#333', border:'none', borderRadius:4,
+                padding:'12px 28px', fontSize:12, fontFamily:"'Courier New',monospace",
+                fontWeight:700, letterSpacing:2, cursor:selectedHook?'pointer':'not-allowed',
+                textTransform:'uppercase', transition:'all 0.3s'
+              }}>⚡ Generate Full Prompt</button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 3 */}
+        {step===3 && (
+          <div>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
+              <p style={{ fontSize:11, letterSpacing:3, color:'#555', textTransform:'uppercase' }}>✅ Your Viral Prompt</p>
+              <div style={{ display:'flex', gap:7 }}>
+                <button onClick={reset} style={{ background:'transparent', border:'1px solid #333', borderRadius:4, padding:'7px 14px', color:'#555', fontSize:10, fontFamily:"'Courier New',monospace", cursor:'pointer' }}>↺ Restart</button>
+                <button onClick={copy} style={{ background:copied?'#00C896':nicheColor, border:'none', borderRadius:4, padding:'7px 18px', color:'#000', fontSize:10, fontFamily:"'Courier New',monospace", cursor:'pointer', fontWeight:700, transition:'all 0.3s' }}>{copied?'✓ COPIED':'⎘ COPY ALL'}</button>
+              </div>
+            </div>
+            <div style={{ background:'#0d0d0d', border:`1px solid ${nicheColor}33`, borderRadius:8, padding:20, maxHeight:480, overflowY:'auto', fontSize:11, lineHeight:1.9, color:'#bbb', whiteSpace:'pre-wrap', fontFamily:"'Courier New',monospace" }}>
+              {generatedPrompt}
+            </div>
+            <div style={{ marginTop:16, background:'#0d0d0d', border:'1px solid #1e1e1e', borderRadius:8, padding:'14px 18px', fontSize:11, color:'#555', lineHeight:1.8 }}>
+              <strong style={{color:'#888'}}>How to use:</strong> Paste into <span style={{color:nicheColor}}>ChatGPT / Claude / Gemini</span> → Get full script + titles + tags → Drop into your video editor.
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
